@@ -1,0 +1,10 @@
+{
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "framework": "node",
+  "env": {
+    "PAYDUNYA_MASTER_KEY": "@paydunya_master_key",
+    "PAYDUNYA_PRIVATE_KEY": "@paydunya_private_key",
+    "MONETAG_REF": "@monetag_ref"
+  }
+}

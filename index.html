@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Cheno IA - Assistant Pédagogique</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style-moderne.css">
+  
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  
+  <!-- Highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+</head>
+<body>
+
+  <!-- ===== ÉCRAN DE CHARGEMENT (STYLE FACEBOOK) ===== -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader-container">
+      <div class="loader-logo">
+        <div class="brain-icon">🧠</div>
+      </div>
+      <div class="loader-text">Cheno IA</div>
+      <div class="loader-subtext">Assistant Pédagogique</div>
+      
+      <!-- Skeleton Screens -->
+      <div class="skeleton-container">
+        <div class="skeleton-item">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-text">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+          </div>
+        </div>
+        <div class="skeleton-item">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-text">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Barre de progression -->
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      
+      <!-- Message de connexion -->
+      <div class="connection-status" id="connectionStatus">
+        <span class="status-dot"></span>
+        <span class="status-text">Vérification de la connexion...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL ERREUR CONNEXION ===== -->
+  <div class="no-connection-modal" id="noConnectionModal" hidden>
+    <div class="no-connection-content">
+      <div class="error-icon">
+        <i class="fas fa-wifi-slash"></i>
+      </div>
+      <h2>Pas de Connexion Internet</h2>
+      <p>Veuillez vérifier votre connexion WiFi ou données mobiles</p>
+      <div class="connection-tips">
+        <div class="tip">
+          <i class="fas fa-wifi"></i>
+          <span>Activer le WiFi</span>
+        </div>
+        <div class="tip">
+          <i class="fas fa-phone"></i>
+          <span>Activer les données mobiles</span>
+        </div>
+        <div class="tip">
+          <i class="fas fa-redo"></i>
+          <span>Redémarrer le routeur</span>
+        </div>
+      </div>
+      <button class="btn-retry" id="retryConnectionBtn">
+        <i class="fas fa-sync"></i> Réessayer
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== MODAL PUBS AUTO (TOUTES LES 10 MIN) ===== -->
+  <div class="ads-modal" id="adsModal" hidden>
+    <div class="ads-container">
+      <button class="ads-close" id="closeAdsBtn" title="Fermer">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="ads-header">
+        <span class="ads-badge">Publicité</span>
+        <div class="ads-timer">
+          <span id="adsTimer">30s</span>
+        </div>
+      </div>
+      
+      <div class="ads-content" id="adsContent">
+        <!-- Pub dynamique -->
+      </div>
+      
+      <div class="ads-actions">
+        <button class="btn-ads-skip" id="skipAdsBtn" hidden>
+          Passer
+        </button>
+        <button class="btn-ads-claim" id="claimAdsBtn">
+          <i class="fas fa-gift"></i> Réclamer +10 Crédits
+        </button>
+      </div>
+    </div>
+    <div class="ads-overlay" id="adsOverlay"></div>
+  </div>
+
+  <!-- ===== APP PRINCIPALE ===== -->
+  <div class="app-wrapper" id="appWrapper" hidden>
+    
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <button class="btn-new-chat" id="newChatBtn" title="Nouvelle discussion">
+          <i class="fas fa-plus"></i>
+          <span>Nouveau Chat</span>
+        </button>
+        <button class="btn-menu-close" id="menuCloseBtn">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-section="chat">
+          <i class="fas fa-comments"></i>
+          <span>Chat</span>
+        </div>
+        <div class="nav-item" data-section="explorer">
+          <i class="fas fa-compass"></i>
+          <span>Explorer</span>
+        </div>
+        <div class="nav-item" data-section="premium">
+          <i class="fas fa-star"></i>
+          <span>Premium</span>
+          <span class="badge-new">NOUVEAU</span>
+        </div>
+      </nav>
+
+      <!-- Historique -->
+      <div class="sidebar-history">
+        <div class="history-title">Récent</div>
+        <div class="history-list" id="historyList">
+          <!-- Généré dynamiquement -->
+        </div>
+      </div>
+
+      <!-- Récompenses -->
+      <div class="sidebar-rewards">
+        <div class="reward-card">
+          <div class="reward-icon">💰</div>
+          <div class="reward-info">
+            <h4>Gagnez des Crédits</h4>
+            <p id="creditCount">0 crédits</p>
+          </div>
+        </div>
+        
+        <div class="reward-buttons">
+          <button class="btn-reward" id="watchAdBtn">
+            <i class="fas fa-tv"></i>
+            <span>Regarder Pub</span>
+            <span class="reward-badge">+10</span>
+          </button>
+          
+          <button class="btn-reward" id="inviteBtn">
+            <i class="fas fa-share-alt"></i>
+            <span>Inviter</span>
+            <span class="reward-badge">+50</span>
+          </button>
+          
+          <button class="btn-reward monetag" id="monetagBtn">
+            <i class="fas fa-external-link-alt"></i>
+            <span>Devenir Éditeur</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Profil -->
+      <div class="sidebar-profile">
+        <div class="profile-card" id="profileCard">
+          <div class="profile-avatar" id="profileAvatar">C</div>
+          <div class="profile-details">
+            <div class="profile-name" id="profileName">Connexion</div>
+            <div class="profile-status" id="profileStatus">Gratuit</div>
+          </div>
+          <button class="btn-profile-menu" id="profileMenuBtn">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+        </div>
+
+        <!-- Menu profil -->
+        <div class="profile-dropdown" id="profileDropdown" hidden>
+          <a href="#" class="dropdown-item" id="viewProfileLink">
+            <i class="fas fa-user"></i>
+            <span>Mon Profil</span>
+          </a>
+          <a href="#" class="dropdown-item" id="settingsLink">
+            <i class="fas fa-cog"></i>
+            <span>Paramètres</span>
+          </a>
+          <a href="#" class="dropdown-item" id="aboutLink">
+            <i class="fas fa-info-circle"></i>
+            <span>À Propos</span>
+          </a>
+          <hr>
+          <a href="#" class="dropdown-item logout" id="logoutLink">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Déconnexion</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+      
+      <!-- En-tête -->
+      <header class="app-header">
+        <button class="btn-menu-open" id="menuOpenBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="header-center">
+          <h1 class="app-title">Cheno IA</h1>
+          <p class="app-subtitle">Assistant Pédagogique</p>
+        </div>
+        
+        <div class="header-right">
+          <span class="status-badge" id="statusBadge">Connecté</span>
+        </div>
+      </header>
+
+      <!-- ===== SECTION CHAT ===== -->
+      <section class="section" id="chatSection" data-section="chat">
+        <div class="chat-area">
+          <!-- Messages -->
+          <div class="messages-wrapper" id="messagesWrapper">
+            <div class="messages-list" id="messagesList">
+              <!-- Messages générés dynamiquement -->
+            </div>
+          </div>
+
+          <!-- Welcome Screen -->
+          <div class="welcome-screen" id="welcomeScreen">
+            <div class="welcome-icon">🧠</div>
+            <h2>Bienvenue dans Cheno IA</h2>
+            <p>Votre assistant pédagogique personnel</p>
+            
+            <div class="quick-prompts">
+              <button class="quick-prompt-btn" data-prompt="Résume ce cours simplement">
+                <i class="fas fa-book"></i>
+                <span>Résumer un Cours</span>
+              </button>
+              <button class="quick-prompt-btn" data-prompt="Aide-moi avec cet exercice de maths">
+                <i class="fas fa-calculator"></i>
+                <span>Exercice de Maths</span>
+              </button>
+              <button class="quick-prompt-btn" data-prompt="Donne-moi une fiche de révision">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Fiche de Révision</span>
+              </button>
+              <button class="quick-prompt-btn" data-prompt="Explique-moi ce concept">
+                <i class="fas fa-lightbulb"></i>
+                <span>Expliquer Concept</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Zone -->
+        <div class="chat-footer">
+          <form class="chat-form" id="chatForm">
+            <div class="input-area">
+              <button type="button" class="btn-attach" id="attachBtn" title="Ajouter un fichier">
+                <i class="fas fa-paperclip"></i>
+              </button>
+              <input type="file" id="fileInput" hidden>
+              
+              <textarea 
+                id="messageInput" 
+                class="message-input" 
+                placeholder="Écrivez votre question..."
+                rows="1"
+              ></textarea>
+              
+              <button type="submit" class="btn-send" id="sendBtn" title="Envoyer">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+            
+            <div class="input-hint">
+              Appuyez sur Shift + Entrée pour nouvelle ligne
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ===== SECTION EXPLORER ===== -->
+      <section class="section" id="explorerSection" data-section="explorer" hidden>
+        <div class="explorer-grid">
+          <div class="explorer-card">
+            <div class="card-icon">📚</div>
+            <h3>Mes Cours</h3>
+            <p>Accédez à vos cours sauvegardés</p>
+            <button class="btn-card-action">Voir</button>
+          </div>
+
+          <div class="explorer-card">
+            <div class="card-icon">🎯</div>
+            <h3>Objectifs</h3>
+            <p>Suivi de vos objectifs d'étude</p>
+            <button class="btn-card-action">Suivi</button>
+          </div>
+
+          <div class="explorer-card">
+            <div class="card-icon">📊</div>
+            <h3>Statistiques</h3>
+            <p>Votre progression académique</p>
+            <button class="btn-card-action">Analyser</button>
+          </div>
+
+          <div class="explorer-card">
+            <div class="card-icon">🏆</div>
+            <h3>Réalisations</h3>
+            <p>Badges et récompenses</p>
+            <button class="btn-card-action">Parcourir</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SECTION PREMIUM ===== -->
+      <section class="section" id="premiumSection" data-section="premium" hidden>
+        <div class="premium-container">
+          <div class="premium-header">
+            <h2>Cheno IA Premium</h2>
+            <p>Débloquez toutes les fonctionnalités</p>
+          </div>
+
+          <div class="plans-container">
+            <!-- Plan Mensuel -->
+            <div class="plan-card">
+              <div class="plan-badge">Populaire</div>
+              <h3>Mensuel</h3>
+              <div class="plan-price">2 000<span> FCFA</span></div>
+              <div class="plan-duration">/mois</div>
+              
+              <ul class="plan-features">
+                <li><i class="fas fa-check"></i> 5 000 Crédits</li>
+                <li><i class="fas fa-check"></i> Réponses prioritaires</li>
+                <li><i class="fas fa-check"></i> Pas de pubs</li>
+                <li><i class="fas fa-check"></i> Support chat 24/7</li>
+              </ul>
+              
+              <button class="btn-subscribe monthly" data-plan="monthly">
+                <i class="fas fa-credit-card"></i> S'abonner
+              </button>
+            </div>
+
+            <!-- Plan Annuel -->
+            <div class="plan-card featured">
+              <div class="plan-badge featured">Économies 30%</div>
+              <h3>Annuel</h3>
+              <div class="plan-price">18 000<span> FCFA</span></div>
+              <div class="plan-duration">/an (1 500/mois)</div>
+              
+              <ul class="plan-features">
+                <li><i class="fas fa-check"></i> Crédits illimités</li>
+                <li><i class="fas fa-check"></i> Priorité absolue</li>
+                <li><i class="fas fa-check"></i> Zéro publicité</li>
+                <li><i class="fas fa-check"></i> Support VIP</li>
+              </ul>
+              
+              <button class="btn-subscribe yearly featured" data-plan="yearly">
+                <i class="fas fa-crown"></i> S'abonner
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Overlay sidebar mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  </div>
+
+  <!-- ===== MODAL LOGIN ===== -->
+  <div class="auth-modal" id="authModal" hidden>
+    <div class="auth-card">
+      <button class="btn-auth-close" id="closeAuthBtn">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <div class="auth-header">
+        <div class="auth-logo">🧠</div>
+        <h2>Bienvenue</h2>
+        <p>Connectez-vous à Cheno IA</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="tab-btn active" data-tab="login">Connexion</button>
+        <button class="tab-btn" data-tab="register">Inscription</button>
+      </div>
+
+      <!-- Login Tab -->
+      <div class="tab-content active" data-tab="login">
+        <button class="btn-social google">
+          <i class="fab fa-google"></i> Continuer avec Google
+        </button>
+        
+        <div class="divider">OU</div>
+        
+        <input type="email" id="loginEmail" class="auth-input" placeholder="Email" required>
+        <input type="password" id="loginPassword" class="auth-input" placeholder="Mot de passe" required>
+        
+        <button class="btn-auth-submit" id="loginBtn">Se Connecter</button>
+        
+        <a href="#" class="auth-link">Mot de passe oublié?</a>
+      </div>
+
+      <!-- Register Tab -->
+      <div class="tab-content" data-tab="register">
+        <input type="text" id="registerName" class="auth-input" placeholder="Nom complet" required>
+        <input type="email" id="registerEmail" class="auth-input" placeholder="Email" required>
+        <input type="password" id="registerPassword" class="auth-input" placeholder="Mot de passe" required>
+        <input type="password" id="registerConfirm" class="auth-input" placeholder="Confirmer mot de passe" required>
+        
+        <label class="checkbox-label">
+          <input type="checkbox" required>
+          <span>J'accepte les conditions d'utilisation</span>
+        </label>
+        
+        <button class="btn-auth-submit" id="registerBtn">Créer un Compte</button>
+      </div>
+
+      <p class="auth-message" id="authMessage"></p>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="app-moderne.js" defer></script>
+</body>
+</html>

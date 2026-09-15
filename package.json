@@ -1,0 +1,20 @@
+{
+  "name": "cheno-ia",
+  "version": "2.0.0",
+  "description": "Assistant Pédagogique Ultra-Moderne avec Pubs Auto",
+  "main": "app.js",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'Build ready for Vercel'"
+  },
+  "keywords": [
+    "education",
+    "ai",
+    "assistant",
+    "burkina-faso",
+    "french"
+  ],
+  "author": "Henoc (Cheno Baby)",
+  "license": "MIT"
+}

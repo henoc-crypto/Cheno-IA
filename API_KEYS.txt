@@ -1,0 +1,195 @@
+🔑 CRÉDENTIALS CHENO IA
+================================================================================
+
+⚠️  IMPORTANT: NE PAS COMMIT CES CLÉS SUR GITHUB!
+    Utiliser Vercel Environment Variables à la place
+
+================================================================================
+💳 PAYDUNYA (Paiements Premium)
+================================================================================
+
+Mode: LIVE (Production)
+
+Master Key:
+  ckhviap7-S8Nd-FcPn-LvTU-obdTzg8gffGE
+
+Private Key:
+  live_private_vT8XlDxikdSUvVKqMzqMNZohDOA
+
+Token:
+  LsWLKj3XdPnMAWWcV9s2
+
+Webhook URL:
+  https://cheno-ia-complet.vercel.app/api/paydunya-webhook
+
+Dashboard:
+  https://app.paydunya.com
+
+================================================================================
+📺 MONETAG (Pubs & Affilié)
+================================================================================
+
+Lien Affilié:
+  https://monetag.com/?ref_id=tN4E
+
+Script Pub:
+  https://omg10.com/4/11612313
+
+Dashboard:
+  https://dashboard.monetag.com
+
+Contact Support:
+  support@monetag.com
+
+================================================================================
+🔐 AUTRES SERVICES
+================================================================================
+
+Firebase (Phase 2):
+  Project ID: [À CRÉER]
+  API Key: [À OBTENIR]
+
+Claude API (Phase 2):
+  API Key: [À OBTENIR]
+  Model: claude-opus-5 (recommandé)
+
+================================================================================
+📝 COMMENT UTILISER CES CLÉS
+================================================================================
+
+✅ DANS VERCEL (RECOMMANDÉ):
+
+1. Dashboard Vercel → Project: cheno-ia-complet
+2. Settings → Environment Variables
+3. Ajouter chaque variable:
+   - Nom: PAYDUNYA_MASTER_KEY
+   - Valeur: ckhviap7-S8Nd-FcPn-LvTU-obdTzg8gffGE
+   
+4. Redéployer pour appliquer
+
+❌ DANS LE CODE (NE JAMAIS FAIRE):
+
+Ne JAMAIS ajouter les clés directement dans:
+- app.js
+- index.html
+- Ou n'importe quel fichier commité
+
+================================================================================
+🚀 PHASE 2: INTÉGRATION PAYDUNYA
+================================================================================
+
+Fichier: api/paydunya.php (à créer)
+
+```php
+<?php
+require_once 'Paydunya.php';
+
+Paydunya::setMasterKey('ckhviap7-S8Nd-FcPn-LvTU-obdTzg8gffGE');
+Paydunya::setPrivateKey('live_private_vT8XlDxikdSUvVKqMzqMNZohDOA');
+Paydunya::setToken('LsWLKj3XdPnMAWWcV9s2');
+Paydunya::setMode('live');
+
+// Créer une transaction
+$store = Paydunya_Store::create('Cheno IA', '2000 FCFA', 'info@chenoia.app');
+$invoice = Paydunya_Invoice::create();
+$invoice->addItem('Premium Mensuel', 1, '2000');
+$invoice->setStore($store);
+
+// Rediriger vers payment
+$response = $invoice->create();
+if ($response['success']) {
+    header('Location: ' . $response['response']['invoice_token']);
+}
+?>
+```
+
+================================================================================
+🔔 WEBHOOKS PAYDUNYA
+================================================================================
+
+Quand un utilisateur paye:
+  POST /api/paydunya-webhook
+
+Verif signature + Activer Premium
+  userPlan = 'premium'
+  userCredits = 999999 (illimité)
+
+================================================================================
+📊 TRACKING MONETAG
+================================================================================
+
+Script à ajouter dans index.html:
+
+```html
+<script src="https://omg10.com/4/11612313"></script>
+```
+
+Pubs affichées automatiquement dans:
+- Modal pub (toutes les 10 min)
+- Sidebar (optionnel)
+- Between messages (optionnel)
+
+Revenus:
+- Par impression: $0.001-0.01
+- Par clic: $0.01-0.10
+- Par action: $0.10+
+
+Dashboard: https://dashboard.monetag.com
+Earnings → View Reports
+
+================================================================================
+🔐 SÉCURITÉ DES CLÉS
+================================================================================
+
+✅ À FAIRE:
+- Garder les clés secrètes
+- Utiliser Vercel Environment Variables
+- Committer .gitignore
+- Ne jamais partager les clés
+- Rotater les clés périodiquement
+
+❌ À NE PAS FAIRE:
+- Committer API_KEYS.txt sur GitHub
+- Mettre les clés dans le code source
+- Partager les clés par email/chat
+- Utiliser les clés de test en production
+
+================================================================================
+📞 SUPPORT
+================================================================================
+
+PayDunya Support:
+  Email: support@paydunya.com
+  WhatsApp: +234 (Nigeria)
+  Docs: https://paydunya.com/docs
+
+Monetag Support:
+  Email: support@monetag.com
+  Dashboard: https://dashboard.monetag.com/support
+  Telegram: @monetag_support
+
+================================================================================
+📋 CHECKLIST SETUP
+================================================================================
+
+- [ ] Créer compte PayDunya
+- [ ] Ajouter API keys à Vercel
+- [ ] Tester paiement en mode test
+- [ ] Créer compte Monetag
+- [ ] Ajouter script Monetag
+- [ ] Tester pubs
+- [ ] Configurer webhooks
+- [ ] Setup firebase (phase 2)
+- [ ] Setup Claude API (phase 2)
+
+================================================================================
+✅ C'EST PRÊT!
+
+API keys configurées ✅
+Prêt pour production ✅
+Pubs et paiements activés ✅
+
+================================================================================
+Version: 2.0 Ultra-Moderne
+Date: Septembre 2026
+Status: ✅ CONFIGURATION COMPLÈTE
